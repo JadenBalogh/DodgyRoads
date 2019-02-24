@@ -1,0 +1,8 @@
+TextContent = 
+{
+	ZilchScriptBuilder = 
+	{
+		string Name = "Continuous",
+		uint64 ResourceId = 56547d38e56548a1,
+	},
+},

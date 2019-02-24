@@ -1,0 +1,19 @@
+DataContent = 
+{
+	DataBuilder = 
+	{
+		string Name = "SlowTurret1",
+		uint64 ResourceId = 56543ab1aec65835,
+		string LoaderType = "Cog",
+		uint Version = 0,
+		bool ShowInEditor = true,
+	},
+	ContentTags = 
+	{
+		Array Tags = 
+		[
+			"Archetype",
+			"Cog",
+		],
+	},
+},

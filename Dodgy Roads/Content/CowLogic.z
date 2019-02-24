@@ -1,0 +1,80 @@
+class CowLogic : ZilchComponent
+{
+    //How far to the left the owner is allowed to travel
+    [Property]
+    var LeftBoundary : Real;
+    //How far to the right the owner is allowed to travel
+    [Property] 
+    var RightBoundary : Real;
+    //The owner's movement speed
+    [Property]
+    var Speed : Real = 1.0;
+    
+    var InitialPos : Real;
+    
+    [Property]
+    var SlowDuration : Real;
+    [Property]
+    var SlowAmount : Real;
+    [Property]
+    var DeathEffect : Archetype = null;
+    
+    function Initialize(init : CogInitializer)
+    {
+        Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+        
+        Zero.Connect(this.Owner, Events.CollisionStarted, this.OnCollisionStarted);
+    }
+
+    function OnLogicUpdate(event : UpdateEvent)
+    {
+        //Call the movement function, inputting event.Dt
+        this.Move(event.Dt);
+        
+        //if the object is past the left boundary,
+        if (this.Owner.Transform.Translation.X < this.LeftBoundary)
+        {
+            //change directions.
+            this.Speed *= -1;
+            
+            this.Owner.Sprite.FlipX = true;
+        }
+        //if the object is past the right boundary,
+        else if (this.Owner.Transform.Translation.X > this.RightBoundary)
+        {
+            //change directions.
+            this.Speed *= -1;
+            
+            this.Owner.Sprite.FlipX = false;
+        }
+    }
+    
+    function OnCollisionStarted(event : CollisionEvent)
+    {
+        var other = event.OtherObject;
+        
+        if (other.Health != null)
+        {
+            other.PlayerController.IsSlowed = true;
+            other.PlayerController.IsTimed = true;
+            other.PlayerController.SlowDuration = this.SlowDuration;
+            other.PlayerController.SlowAmount = this.SlowAmount;
+            
+            var death = this.Space.CreateAtPosition(this.DeathEffect, this.Owner.Transform.Translation);
+            
+            this.Owner.Destroy();
+        }
+    }
+    
+    function Move(deltaTime : Real)
+    {
+        var movement = Real3(0.0, 0.0, 0.0);
+        var currentPos = this.Owner.Transform.Translation;
+        
+        movement += Real3(this.Speed, 0.0, 0.0);
+        
+        currentPos += movement * deltaTime;
+        
+        this.Owner.Transform.Translation = currentPos;
+    }
+}

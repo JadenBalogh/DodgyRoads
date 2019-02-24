@@ -1,0 +1,26 @@
+class BulletLogic : ZilchComponent
+{
+    [Property]
+    var DestroyOnCollide : Boolean = true;
+    var Damage : Real = 1.0;
+    
+    function Initialize(init : CogInitializer)
+    {
+        Zero.Connect(this.Owner, Events.CollisionStarted, this.OnCollisionStarted);
+    }
+    
+    function OnCollisionStarted(event : CollisionEvent)
+    {
+        var other = event.OtherObject;
+        
+        if (other.Health != null)
+        {
+            other.Health.CurrentHealth -= this.Damage;
+        }
+        
+        if (this.DestroyOnCollide)
+        {
+            this.Owner.Destroy();
+        }
+    }
+}

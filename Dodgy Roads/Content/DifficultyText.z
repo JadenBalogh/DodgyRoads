@@ -1,0 +1,14 @@
+class DifficultyText : ZilchComponent
+{
+    var Player : Cog = null;
+    function Initialize(init : CogInitializer)
+    {
+        this.Player = this.Space.FindObjectByName("Player1");
+        Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    }
+
+    function OnLogicUpdate(event : UpdateEvent)
+    {
+        this.Owner.SpriteText.Text = "Difficulty: `this.Player.Spawner.Difficulty`";
+    }
+}

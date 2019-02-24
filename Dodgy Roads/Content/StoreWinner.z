@@ -1,0 +1,4 @@
+class StoreWinner : ZilchComponent
+{
+    var Winner : Integer;
+}

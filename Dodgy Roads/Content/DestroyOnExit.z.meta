@@ -1,0 +1,8 @@
+TextContent = 
+{
+	ZilchScriptBuilder = 
+	{
+		string Name = "DestroyOnExit",
+		uint64 ResourceId = 56d65383d193d736,
+	},
+},

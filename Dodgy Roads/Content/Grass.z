@@ -1,0 +1,39 @@
+class Grass : ZilchComponent
+{
+    [Property]
+    var SlowAmount : Real = 1;
+    function Initialize(init : CogInitializer)
+    {
+        //Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+        
+        Zero.Connect(this.Owner, Events.CollisionPersisted, this.OnCollisionPersisted);
+        
+        Zero.Connect(this.Owner, Events.CollisionEnded, this.OnCollisionEnded);
+    }
+
+    function OnLogicUpdate(event : UpdateEvent)
+    {
+    }
+    
+    function OnCollisionPersisted(event : CollisionEvent)
+    {
+        var other = event.OtherObject;
+        
+        if (other.Health != null)
+        {
+            other.PlayerController.IsSlowed = true;
+            other.PlayerController.IsTimed = false;
+            other.PlayerController.SlowAmount = this.SlowAmount;
+        }
+    }
+    
+    function OnCollisionEnded(event : CollisionEvent)
+    {
+        var other = event.OtherObject;
+        
+        if (other.Health != null)
+        {
+            other.PlayerController.IsDone = true;
+        }
+    }
+}

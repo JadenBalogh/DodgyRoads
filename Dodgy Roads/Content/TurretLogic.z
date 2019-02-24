@@ -1,0 +1,110 @@
+class TurretLogic : ZilchComponent
+{
+    [Property]
+    var DetectionRadius : Real = 1.0;
+    [Property]
+    var Damage : Real = 1.0;
+    
+    [Property]
+    var Projectile : Archetype = null;
+    [Property]
+    var CreateDistance : Real = 1.0;
+    [Property]
+    var Speed : Real;
+    
+    [Property]
+    var TargetPlayer : Integer = 1;
+    var Player : Cog = null;
+    var DistAway : Real;
+    
+    [Property]
+    var IsSlowing : Boolean = false;
+    [Property]
+    var SlowDuration : Real = 1;
+    [Property]
+    var SlowAmount : Real = 1;
+    
+    [Property] 
+    var Cooldown : Real;
+    
+    var TimeSinceLast : Real = 0.0;
+    
+    function Initialize(init : CogInitializer)
+    {
+        if (this.TargetPlayer == 1)
+        {
+            this.Player = this.Space.FindObjectByName("Player1");
+        }
+        else
+        {
+            this.Player = this.Space.FindObjectByName("Player2");
+        }
+        
+        Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    }
+    
+    function OnLogicUpdate(event : UpdateEvent)
+    {
+        this.GetDist();
+        
+        if (this.TimeSinceLast > 0.0)
+        {
+            this.TimeSinceLast -= event.Dt;
+        }
+        
+        if (this.TimeSinceLast <= 0 && this.DistAway <= this.DetectionRadius)
+        {
+            this.RangedAttack();
+            
+            this.TimeSinceLast = this.Cooldown;
+        }
+    }
+    
+    function RangedAttack()
+    {
+        var playerPos = Real3(0, 0, 0);
+        playerPos = this.Player.Transform.Translation;
+            
+        var myPos = this.Owner.Transform.Translation;
+        var direction = Math.Normalize(playerPos - myPos);
+        
+        var position = this.Owner.Transform.WorldTranslation + (direction * this.CreateDistance);
+        
+        var projectile : Cog = null;
+        
+        projectile = this.Space.CreateAtPosition(this.Projectile, position);
+        
+        if (projectile != null)
+        {
+            projectile.RigidBody.Velocity = direction * this.Speed;
+            if (projectile.BulletLogic != null)
+            {
+                projectile.BulletLogic.Damage = this.Damage;
+            }
+            else if (projectile.SlowBulletLogic != null)
+            {
+                projectile.SlowBulletLogic.SlowDuration = this.SlowDuration;
+                projectile.SlowBulletLogic.SlowAmount = this.SlowAmount;
+            }
+            else
+            {
+                projectile.TrackingBulletLogic.Damage = this.Damage;
+                projectile.TrackingBulletLogic.Player = this.Player;
+                projectile.TrackingBulletLogic.Speed = this.Speed;
+            }
+            
+        }
+        
+        this.TimeSinceLast = this.Cooldown;
+    }
+    
+    function GetDist()
+    {
+        if (this.Player != null)
+        {
+            //Square root((x2-x1)^2 + (y2-y1)^2) = Resultant distance from the owner to the player
+            this.DistAway = Math.Sqrt((Math.Pow((this.Player.Transform.Translation.X - this.Owner.Transform.Translation.X), 2)) 
+            + (Math.Pow((this.Player.Transform.Translation.Y - this.Owner.Transform.Translation.Y), 2)));
+        }
+    }
+}

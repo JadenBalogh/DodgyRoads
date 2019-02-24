@@ -1,0 +1,25 @@
+class Continuous : ZilchComponent
+{
+    [Property]
+    var MyArchetype : Archetype = null;
+    var Camera : Cog = null;
+    
+    function Initialize(init : CogInitializer)
+    {
+        this.Camera = this.Space.FindObjectByName("Camera");
+        
+        Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    }
+
+    function OnLogicUpdate(event : UpdateEvent)
+    {
+        var dist = this.Owner.Transform.Scale.Y;
+        if (this.Owner.Transform.Translation.Y + dist < this.Camera.Transform.Translation.Y)
+        {
+            var pos = Real3(this.Owner.Transform.Translation.X, this.Owner.Transform.Translation.Y + (dist * 2), this.Owner.Transform.Translation.Z);
+            this.Space.CreateAtPosition(this.MyArchetype, pos);
+            
+            this.Owner.Destroy();
+        }
+    }
+}

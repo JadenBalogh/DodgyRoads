@@ -1,0 +1,8 @@
+TextContent = 
+{
+	ZilchScriptBuilder = 
+	{
+		string Name = "SlowBulletLogic",
+		uint64 ResourceId = 5654396941d7125e,
+	},
+},

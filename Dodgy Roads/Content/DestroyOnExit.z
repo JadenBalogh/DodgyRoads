@@ -1,0 +1,19 @@
+class DestroyOnExit : ZilchComponent
+{
+    var Camera : Cog = null;
+    
+    function Initialize(init : CogInitializer)
+    {
+        this.Camera = this.Space.FindObjectByName("Camera");
+        
+        Zero.Connect(this.Owner, Events.ExitView, this.OnExitView);
+    }
+    
+    function OnExitView(event : GraphicalEvent)
+    {
+        if (this.Owner.Transform.Translation.Y < this.Camera.Transform.Translation.Y)
+        {
+            this.Owner.Destroy();
+        }
+    }
+}

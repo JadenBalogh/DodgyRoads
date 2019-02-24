@@ -1,0 +1,7 @@
+ContentLibrary = 
+{
+	string Name = "Dodgy Path",
+	uint64 LibraryId = 56d3329cb000cbb7,
+	string SourceControlType = "",
+	bool ReadOnly = false,
+},

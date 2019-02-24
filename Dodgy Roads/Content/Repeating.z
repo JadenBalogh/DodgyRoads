@@ -1,0 +1,25 @@
+class Repeating : ZilchComponent
+{
+    var Player1 : Cog = null;
+    var Player2 : Cog = null;
+    
+    function Initialize(init : CogInitializer)
+    {
+        Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+        
+        this.Player1 = this.Space.FindObjectByName("Player1");
+        this.Player2 = this.Space.FindObjectByName("Player2");
+    }
+    
+    function OnLogicUpdate(event : UpdateEvent)
+    {
+        if (this.Player1.Transform.Translation.Y >= 20)
+        {
+            this.Player1.Transform.Translation = Real3(0, 0, 0);
+        }
+        else if (this.Player2.Transform.Translation.Y >= 20)
+        {
+            this.Player2.Transform.Translation = Real3(0, 0, 0);
+        }
+    }
+}

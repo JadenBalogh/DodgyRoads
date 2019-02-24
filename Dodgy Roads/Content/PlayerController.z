@@ -1,0 +1,139 @@
+class PlayerController : ZilchComponent
+{
+    [Property]
+    var Speed : Real = 1;
+    [Property]
+    var Up : Keys;
+    [Property]
+    var Down : Keys;
+    [Property]
+    var Right : Keys;
+    [Property]
+    var Left : Keys;
+    
+    var IsSlowed : Boolean = false;
+    var IsTimed : Boolean = false;
+    var IsDone : Boolean = false;
+    var SlowTimer : Real = 0;
+    var SlowDuration : Real = 1;
+    var SlowAmount : Real = 1;
+    var SlowInit : Boolean = true;
+    var A : Real;
+    var O : Real;
+    
+    var BaseTime : Real;
+    
+    function Initialize(init : CogInitializer)
+    {
+        Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    }
+
+    function OnLogicUpdate(event : UpdateEvent)
+    {
+        this.BaseTime = event.Dt;
+        if (this.IsSlowed)
+        {
+            if (this.SlowInit)
+            {
+                this.O = this.Speed;
+                this.A = this.Speed * this.SlowAmount;
+                this.SlowInit = false;
+            }
+            
+            if (this.IsTimed)
+            {
+                this.SlowTimed(event.Dt, this.A, this.O);
+            }
+            else
+            {
+                this.SlowUntil(this.A, this.O);
+            }
+        }
+        
+        this.Owner.RigidBody.Velocity = Real3(0.0, 0.0, 0.0);
+        
+        var movement = Real3(0.0, 0.0, 0.0);
+        
+        var hypRatio = 1.4142135623730950488016887242097;
+        // For a triangle with two equal length sides:
+        // The hypotenuse divided by one side is equal to 1.4142135623730950488016887242097
+        // X^2 + Y^2 = Ans^2,   X = Y,   sqrt(2(X^2)) = Ans,   Ans = X(1.4142135623730950488016887242097)
+        // Therefore, the hypotenuse is equal to 1.4142135623730950488016887242097 times one of the sides
+        // HypRatio = 1.4142135623730950488016887242097
+        // X = Ans / HypRatio
+        // Therefore, one side is equal to the hypotenuse divided by 1.4142135623730950488016887242097
+        // Additionally, HypRatio = 2cos(45) or HypRatio = 2sin(45)
+        
+        if (Zero.Keyboard.KeyIsDown(this.Up) && Zero.Keyboard.KeyIsDown(this.Right))
+        {
+            movement.Y += this.Speed / hypRatio;
+            movement.X += this.Speed / hypRatio;
+        }
+        else if (Zero.Keyboard.KeyIsDown(this.Up) && Zero.Keyboard.KeyIsDown(this.Left))
+        {
+            movement.Y += this.Speed / hypRatio;
+            movement.X -= this.Speed / hypRatio;
+        }
+        else if (Zero.Keyboard.KeyIsDown(this.Down) && Zero.Keyboard.KeyIsDown(this.Right))
+        {
+            movement.Y -= this.Speed / hypRatio;
+            movement.X += this.Speed / hypRatio;
+        }
+        else if (Zero.Keyboard.KeyIsDown(this.Down) && Zero.Keyboard.KeyIsDown(this.Left))
+        {
+            movement.Y -= this.Speed / hypRatio;
+            movement.X -= this.Speed / hypRatio;
+        }
+        
+        else if (Zero.Keyboard.KeyIsDown(this.Up))
+        {
+            movement.Y += this.Speed;
+        }
+        else if (Zero.Keyboard.KeyIsDown(this.Down))
+        {
+            movement.Y -= this.Speed;
+        }
+        else if (Zero.Keyboard.KeyIsDown(this.Left))
+        {
+            movement.X -= this.Speed;
+        }
+        else if (Zero.Keyboard.KeyIsDown(this.Right))
+        {
+            movement.X += this.Speed;
+        }
+        
+        this.Owner.Transform.Translation += movement * event.Dt;
+    }
+    
+    function SlowTimed(dt : Real, amount : Real, original : Real)
+    {
+        this.SlowTimer += dt;
+        
+        if (this.SlowTimer < this.SlowDuration)
+        {
+            this.Speed = amount;
+        }
+        else 
+        {
+            this.Speed = original;
+            this.IsSlowed = false;
+            this.SlowInit = true;
+            this.SlowTimer = 0;
+        }
+    }
+    
+    function SlowUntil(amount : Real, original : Real)
+    {
+        if (this.IsDone)
+        {
+            this.Speed = original;
+            this.IsSlowed = false;
+            this.SlowInit = true;
+            this.IsDone = false;
+        }
+        else
+        {
+            this.Speed = amount;
+        }
+    }
+}

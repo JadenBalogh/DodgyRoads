@@ -1,0 +1,251 @@
+class Spawner : ZilchComponent
+{
+    var FirstX : Real;
+    var LastPos : Real = 0;
+    var GameTimer : Real = 0;
+    [Property]
+    var Turret : Archetype = null;
+    [Property]
+    var SlowTurret : Archetype = null;
+    [Property]
+    var TrackingTurret : Archetype = null;
+    [Property]
+    var Wall : Archetype = null;
+    [Property]
+    var Cow : Archetype = null;
+    
+    [Property]
+    var DifficultyThreshold1 : Real = 0;
+    [Property]
+    var DifficultyThreshold2 : Real = 0;
+    [Property]
+    var DifficultyThreshold3 : Real = 0;
+    [Property]
+    var DifficultyThreshold4 : Real = 0;
+    [Property]
+    var DifficultyThreshold5 : Real = 0;
+    var Difficulty : Integer = 0;
+    
+    var Camera : Cog = null;
+    
+    function Initialize(init : CogInitializer)
+    {
+        this.Camera = this.Space.FindObjectByName("Camera");
+        this.FirstX = this.Owner.Transform.Translation.X;
+        
+        Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    }
+
+    function OnLogicUpdate(event : UpdateEvent)
+    {
+        this.GameTimer += event.Dt;
+        
+        if (Math.Round(this.Owner.Transform.Translation.Y) > this.LastPos)
+        {
+            var r = Random();
+            
+            if (this.GameTimer < this.DifficultyThreshold1)
+            {
+                Console.WriteLine("0");
+                this.Difficulty = 0;
+                this.SpawnTurret(20);
+                this.SpawnWall(25);
+            }
+            if (this.GameTimer >= this.DifficultyThreshold1
+            &&  this.GameTimer <  this.DifficultyThreshold2)
+            {
+                Console.WriteLine("1");
+                this.Difficulty = 1;
+                var roll = r.DieRoll(2);
+                if (roll == 1)
+                {
+                    this.SpawnTurret(30);
+                    this.SpawnWall(25);
+                }
+                else
+                {
+                    this.SpawnCow(30);
+                }
+                
+            }
+            if (this.GameTimer >= this.DifficultyThreshold2
+            &&  this.GameTimer <  this.DifficultyThreshold3)
+            {
+                Console.WriteLine("2");
+                this.Difficulty = 2;
+                var roll = r.DieRoll(3);
+                if (roll == 1)
+                {
+                    this.SpawnTurret(40);
+                    this.SpawnWall(25);
+                }
+                else if (roll == 2)
+                {
+                    this.SpawnCow(35);
+                }
+                else
+                {
+                    this.SpawnSlowTurret(10);
+                }
+            }
+            if (this.GameTimer >= this.DifficultyThreshold3
+            &&  this.GameTimer <  this.DifficultyThreshold4)
+            {
+                Console.WriteLine("3");
+                this.Difficulty = 3;
+                var roll = r.DieRoll(3);
+                if (roll == 1)
+                {
+                    this.SpawnTurret(45);
+                    this.SpawnWall(25);
+                }
+                else if (roll == 2)
+                {
+                    this.SpawnCow(40);
+                }
+                else
+                {
+                    this.SpawnSlowTurret(15);
+                }
+            }
+            if (this.GameTimer >= this.DifficultyThreshold4
+            &&  this.GameTimer <  this.DifficultyThreshold5)
+            {
+                Console.WriteLine("4");
+                this.Difficulty = 4;
+                var roll = r.DieRoll(4);
+                if (roll == 1)
+                {
+                    this.SpawnTurret(50);
+                    this.SpawnWall(25);
+                }
+                else if (roll == 2)
+                {
+                    this.SpawnCow(45);
+                }
+                else if (roll == 3)
+                {
+                    this.SpawnSlowTurret(20);
+                }
+                else
+                {
+                    this.SpawnTrackingTurret(15);
+                }
+            }
+            if (this.GameTimer >= this.DifficultyThreshold5)
+            {
+                Console.WriteLine("5");
+                this.Difficulty = 5;
+                var roll = r.DieRoll(4);
+                if (roll == 1)
+                {
+                    this.SpawnTurret(50);
+                    this.SpawnWall(25);
+                }
+                else if (roll == 2)
+                {
+                    this.SpawnCow(50);
+                }
+                else if (roll == 3)
+                {
+                    this.SpawnSlowTurret(25);
+                }
+                else
+                {
+                    this.SpawnTrackingTurret(40);
+                }
+            }
+            
+            this.LastPos = Math.Round(this.Owner.Transform.Translation.Y);
+            
+            if (this.GameTimer % 2 == 0)
+            {
+                
+            }
+        }
+    }
+    
+    function SpawnTurret(chance : Real)
+    {
+        var r = Random();
+        if (r.DieRoll(100) < chance)
+        {
+            var r2 = r.DieRoll(2);
+            var r3 = r.Range(-1, 1);
+            if (r2 == 1)
+            {
+                var pos = Real3(this.FirstX - (4 + r3), this.Camera.Transform.Translation.Y + 10.5, 0);
+                var cog = this.Space.CreateAtPosition(this.Turret, pos);
+            }
+            else
+            {
+                var pos = Real3(this.FirstX + (4 + r3), this.Camera.Transform.Translation.Y + 10.5, 0);
+                var cog = this.Space.CreateAtPosition(this.Turret, pos);
+            }
+        }
+    }
+    
+    function SpawnSlowTurret(chance : Real)
+    {
+        var r = Random();
+        if (r.DieRoll(100) < chance)
+        {
+            var r2 = r.DieRoll(2);
+            var r3 = r.Range(-1, 1);
+            if (r2 == 1)
+            {
+                var pos = Real3(this.FirstX - (4 + r3), this.Camera.Transform.Translation.Y + 10.5, 0);
+                var cog = this.Space.CreateAtPosition(this.SlowTurret, pos);
+            }
+            else
+            {
+                var pos = Real3(this.FirstX + (4 + r3), this.Camera.Transform.Translation.Y + 10.5, 0);
+                var cog = this.Space.CreateAtPosition(this.SlowTurret, pos);
+            }
+        }
+    }
+    
+    function SpawnTrackingTurret(chance : Real)
+    {
+        var r = Random();
+        if (r.DieRoll(100) < chance)
+        {
+            var r2 = r.DieRoll(2);
+            var r3 = r.Range(-1, 1);
+            if (r2 == 1)
+            {
+                var pos = Real3(this.FirstX - (4 + r3), this.Camera.Transform.Translation.Y + 10.5, 0);
+                var cog = this.Space.CreateAtPosition(this.TrackingTurret, pos);
+            }
+            else
+            {
+                var pos = Real3(this.FirstX + (4 + r3), this.Camera.Transform.Translation.Y + 10.5, 0);
+                var cog = this.Space.CreateAtPosition(this.TrackingTurret, pos);
+            }
+        }
+    }
+    
+    function SpawnCow(chance : Real)
+    {
+        var r = Random();
+        if (r.DieRoll(100) < chance)
+        {
+            var r3 = r.Range(-1.5, 1.5);
+            var pos = Real3(this.FirstX - r3, this.Camera.Transform.Translation.Y + 10.5, 0);
+            var cog = this.Space.CreateAtPosition(this.Cow, pos);
+            cog.CowLogic.LeftBoundary = this.FirstX - 1.5;
+            cog.CowLogic.RightBoundary = this.FirstX + 1.5;
+        }
+    }
+    
+    function SpawnWall(chance : Real)
+    {
+        var r = Random();
+        if (r.DieRoll(100) < chance)
+        {
+            var r3 = r.Range(-1.5, 1.5);
+            var pos = Real3(this.FirstX - r3, this.Camera.Transform.Translation.Y + 10.5, 0);
+            var cog = this.Space.CreateAtPosition(this.Wall, pos);
+        }
+    }
+}

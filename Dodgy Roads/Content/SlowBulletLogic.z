@@ -1,0 +1,33 @@
+class SlowBulletLogic : ZilchComponent
+{
+    [Property]
+    var DestroyOnCollide : Boolean = true;
+    var SlowDuration : Real;
+    var SlowAmount : Real;
+    
+    function Initialize(init : CogInitializer)
+    {
+        Zero.Connect(this.Owner, Events.CollisionStarted, this.OnCollisionStarted);
+    }
+    
+    function OnCollisionStarted(event : CollisionEvent)
+    {
+        var other = event.OtherObject;
+        
+        if (other.Health != null)
+        {
+            if (other.PlayerController.IsSlowed == false)
+            {
+                other.PlayerController.IsSlowed = true;
+                other.PlayerController.IsTimed = true;
+                other.PlayerController.SlowDuration = this.SlowDuration;
+                other.PlayerController.SlowAmount = this.SlowAmount;
+            }
+        }
+        
+        if (this.DestroyOnCollide)
+        {
+            this.Owner.Destroy();
+        }
+    }
+}

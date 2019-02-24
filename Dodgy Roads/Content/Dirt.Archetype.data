@@ -1,0 +1,43 @@
+Cog = 
+{
+	LinkId = 
+	{
+		uint Id = 1,
+	},
+	Named = 
+	{
+		string Name = "Dirt",
+	},
+	Archetyped = 
+	{
+		string Name = "565476c6858b2e3c:Dirt",
+	},
+	Transform = 
+	{
+		Vec3 Translation = [-6.5, 0, -0.899999976],
+		Vec3 Scale = [5, 20, 1],
+		Quat Rotation = [0, 0, 0, 1],
+	},
+	Sprite = 
+	{
+		bool Visible = true,
+		bool VisibilityCulling = true,
+		bool VisibilityEvents = true,
+		bool CastShadows = false,
+		Vec4 Color = [0.514999986, 0.462264001, 0.185400009, 1],
+		BlendMode BlendMode = Alpha,
+		SpriteGeometryMode GeometryMode = ZPlane,
+		string SpriteLayer = "52ad5fa30d7fcd50:DefaultSpriteLayer",
+		string SpriteSource = "5275aa4d802dd6dc:Square",
+		bool RenderMask = false,
+		bool FlipX = false,
+		bool FlipY = false,
+		bool AnimationActive = true,
+		float AnimationSpeed = 1,
+		uint StartFrame = 0,
+	},
+	Continuous = 
+	{
+		string MyArchetype = "565476c6858b2e3c:Dirt",
+	},
+},

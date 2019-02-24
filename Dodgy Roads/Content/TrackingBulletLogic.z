@@ -1,0 +1,42 @@
+class TrackingBulletLogic : ZilchComponent
+{
+    [Property]
+    var DestroyOnCollide : Boolean = true;
+    var Damage : Real = 1.0;
+    var Speed : Real;
+    
+    var Player : Cog = null;
+    
+    function Initialize(init : CogInitializer)
+    {
+        Zero.Connect(this.Owner, Events.CollisionStarted, this.OnCollisionStarted);
+        
+        Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    }
+    
+    function OnLogicUpdate(event : UpdateEvent)
+    {
+        var playerPos = Real3(0, 0, 0);
+        playerPos = this.Player.Transform.Translation;
+        
+        var myPos = this.Owner.Transform.Translation;
+        var direction = Math.Normalize(playerPos - myPos);
+        
+        this.Owner.RigidBody.Velocity = direction * this.Speed;
+    }
+    
+    function OnCollisionStarted(event : CollisionEvent)
+    {
+        var other = event.OtherObject;
+        
+        if (other.Health != null)
+        {
+            other.Health.CurrentHealth -= this.Damage;
+        }
+        
+        if (this.DestroyOnCollide)
+        {
+            this.Owner.Destroy();
+        }
+    }
+}

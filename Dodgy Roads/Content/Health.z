@@ -1,0 +1,57 @@
+class Health : ZilchComponent
+{
+    [Property]
+    var MaxHealth : Real = 10;
+    var CurrentHealth : Real;
+    var TextBox : Cog = null;
+    
+    [Property]
+    var DeathLevel: Level = null;
+    var DeathSpace: Space = null;
+    
+    function Initialize(init : CogInitializer)
+    {
+        if (this.Owner.Name == "Player1")
+        {
+            this.TextBox = this.Space.FindObjectByName("P1Health");
+        }
+        else
+        {
+            this.TextBox = this.Space.FindObjectByName("P2Health");
+        }
+        this.CurrentHealth = this.MaxHealth;
+        
+        Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    }
+    
+    function OnLogicUpdate(event : UpdateEvent)
+    {
+        this.TextBox.SpriteText.Text = "Health : `this.CurrentHealth`";
+        if (this.CurrentHealth <= 0)
+        {
+            this.Kill();
+        }
+    }
+    
+    function Kill()
+    {
+        if(this.DeathSpace == null)
+        {
+            if (this.Owner.Name == "Player1")
+            {
+                this.GameSession.StoreWinner.Winner = 2;
+            }
+            else
+            {
+                this.GameSession.StoreWinner.Winner = 1;
+            }
+            
+            this.Space.TimeSpace.Paused = true;
+            this.Space.SoundSpace.Pause = true;
+            
+            this.DeathSpace = this.GameSession.CreateNamedSpace("DeathSpace", Archetype.Find("Space"));
+            
+            this.DeathSpace.LoadLevel(this.DeathLevel);
+        }
+    }
+}

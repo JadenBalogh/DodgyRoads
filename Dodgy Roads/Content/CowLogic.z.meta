@@ -1,0 +1,8 @@
+TextContent = 
+{
+	ZilchScriptBuilder = 
+	{
+		string Name = "CowLogic",
+		uint64 ResourceId = 56d48a6e08e33a18,
+	},
+},
